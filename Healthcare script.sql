@@ -4,6 +4,17 @@ FROM `healthcare_`.`dataset main`;
 UPDATE `dataset main`
 SET 
     Name = UPPER (Name);
+    
+alter table `dataset main`
+drop column `Room Number` ;
+    
+select *
+from `dataset main`    
+where `Billing Amount` < 0
+;
+
+delete from `dataset main`
+where `Billing Amount` < 0;
 
 Alter table `dataset main`
 ADD COLUMN `ADMISSION_DATE_FORMATTED` DATE,
@@ -14,9 +25,16 @@ SET
     `ADMISSION_DATE_FORMATTED` = STR_TO_DATE(`Date of Admission`, '%m/%d/%Y'),
     `DISCHARGE_DATE` = STR_TO_DATE(`Discharge Date`, '%m/%d/%Y');
     
+    
 ALTER TABLE `dataset main`
 drop column `date of admission`,
 drop column `Discharge Date`;
+
+Alter table `dataset main`
+add column `Duration_of_stay` INT;
+
+update `dataset main`
+set `Duration_of_stay`= datediff(`DISCHARGE_DATE`,`ADMISSION_DATE_FORMATTED`);
     
 
 ALTER TABLE `healthcare_`.`dataset main`
@@ -93,7 +111,9 @@ where `Admission Type`= "Emergency" and `Test results` = "Normal"
 order by medication;
 
 select *
-from `dataset main`    
+from `dataset main`
+
+
 
 
 
