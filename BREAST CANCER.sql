@@ -1,4 +1,4 @@
-select * 
+select *
 from breast_cancer
 ;
 
@@ -87,7 +87,8 @@ ORDER BY Patient_Count DESC;
 SELECT AGE_GROUPING, COUNT(*) AS Total_Patients, AVG(`Survival Months`) AS Average_Survival_Months,
 SUM(CASE WHEN Status = 'Alive' THEN 1 ELSE 0 END) * 100 / COUNT(*) AS Survival_Rate
 FROM breast_cancer
-GROUP BY AGE_GROUPING;
+GROUP BY AGE_GROUPING
+order by AGE_GROUPING;
 
 SELECT `T Stage`, COUNT(*) AS Total_Patients, AVG(`Survival Months`) AS Average_Survival_Months,
 SUM(CASE WHEN Status = 'Alive' THEN 1 ELSE 0 END) * 100 / COUNT(*) AS Survival_Rate
@@ -105,4 +106,37 @@ SUM(CASE WHEN Status = 'Alive' THEN 1 ELSE 0 END) * 100 / COUNT(*) AS Survival_R
 FROM breast_cancer
 GROUP BY `T Stage`;
 
+SELECT `T Stage`, COUNT(*) AS Total_Patients, SUM(CASE 
+WHEN Status = 'Alive' THEN 1 ELSE 0 
+END) * 100 / COUNT(*) AS Survival_Rate
+FROM breast_cancer
+GROUP BY `T Stage`
+;
+select AGE_GROUPING, differentiate, avg(`Tumor Size`)
+from breast_cancer
+group by  differentiate, AGE_GROUPING
+order by  AGE_GROUPING;
 
+SELECT `Marital Status`, 
+       differentiate, 
+       ROUND(AVG(`Survival Months`), 2) AS Avg_Survival_Months
+FROM breast_cancer
+GROUP BY `Marital Status`, differentiate
+ORDER BY `Marital Status`, differentiate;
+
+
+SELECT `Tumor Size`, differentiate, 
+       ROUND(AVG(`Survival Months`), 2) AS Avg_Survival_Months,
+       SUM(CASE WHEN Status = 'Alive' THEN 1 ELSE 0 END) * 100 / COUNT(*) AS Survival_Rate
+FROM breast_cancer
+GROUP BY `Tumor Size`,  differentiate
+ORDER BY `Tumor Size`,  differentiate
+;
+
+SELECT Race, `Marital Status`, 
+       COUNT(*) AS Total_Patients,
+       ROUND(AVG(`Survival Months`), 2) AS Avg_Survival_Months,
+       SUM(CASE WHEN Status = 'Alive' THEN 1 ELSE 0 END) * 100 / COUNT(*) AS Survival_Rate
+FROM breast_cancer
+GROUP BY Race, `Marital Status`
+ORDER BY Race, `Marital Status`;
