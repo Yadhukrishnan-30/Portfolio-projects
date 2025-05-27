@@ -165,36 +165,4 @@ when Hours_Studied between 41 and 45 then "41-45"
 end as HH
 from studentscoring
 group by Hours_Studied
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+;
