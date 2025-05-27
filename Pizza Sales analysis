@@ -71,10 +71,117 @@ group by pizza_name
 order by total_qty_sold desc
 limit 5
 ;
-
 select pizza_name, count(distinct order_id) as total_order
 from pizza_sales
 group by pizza_name 
 order by total_order desc
 limit 5
+;
+with table1 as (select pizza_name_id, pizza_category
+from pizza_sales
+where pizza_category = "Classic"
+group by pizza_name_id,pizza_category
+),
+table2 as (select pizza_name_id, pizza_category
+from pizza_sales
+where pizza_category = "Veggie"
+group by pizza_name_id, pizza_category
+) 
+select table1.pizza_name_id, table2.pizza_name_id
+from table1
+right join table2 on table1.pizza_name_id=table2.pizza_name_id
+
+;
+select pizza_name_id, group_concat( distinct pizza_category) as Category
+from pizza_sales
+where pizza_category in ("Classic", "Veggie")
+group by pizza_name_id
+;
+select distinct unit_price, pizza_name_id
+from pizza_sales
+order by unit_price
+;
+select distinct pizza_name_id,
+case 
+when unit_price between 9 and 12.5 then "Small"
+when unit_price between 12.6 and 15 then "Medium"
+when unit_price between 15.1 and 17 then "Large" 
+when unit_price between 17.1 and 21 then "X-Large"
+when unit_price between 21.1 and 40 then "XX-Large"
+end as Price_range
+from pizza_sales
+order by Price_range
+;
+select small.pizza_name, small.unit_price, large.pizza_name, large.unit_price
+from pizza_sales as small
+join pizza_sales as large
+on small.pizza_name_id=large.pizza_name_id
+where pizza_size in ("S","L")
+order by small.pizza_name
+;
+select pizza_name, unit_price, pizza_category,
+dense_rank()over(partition by pizza_category order by unit_price )
+from pizza_sales
+;
+select pizza_name, avg(unit_price)over(partition by pizza_category)
+from pizza_sales
+;
+select distinct pizza_category
+from pizza_sales
+;
+select pizza_name_id, pizza_category, unit_price
+from pizza_sales
+where pizza_category="Classic"
+;
+select pizza_name_id, pizza_category, avg(unit_price)
+from (select pizza_name_id, pizza_category, unit_price
+from pizza_sales
+where pizza_category="Classic") as classic_pizza
+group by pizza_name_id
+
+
+
+
+
+;
+WITH RECURSIVE ingredient_split AS (
+  SELECT 
+    pizza_id,
+    pizza_name,
+    TRIM(SUBSTRING_INDEX(pizza_ingredients, ',', 1)) AS ingredient,
+    SUBSTRING(pizza_ingredients, LOCATE(',', pizza_ingredients) + 1) AS rest
+  FROM pizza_sales
+
+  UNION ALL
+
+  SELECT 
+    pizza_id,
+    pizza_name,
+    TRIM(SUBSTRING_INDEX(rest, ',', 1)),
+    SUBSTRING(rest, LOCATE(',', rest) + 1)
+  FROM ingredient_split
+  WHERE rest LIKE '%,%'
+  
+  UNION ALL
+
+  SELECT 
+    pizza_id,
+    pizza_name,
+    TRIM(rest),
+    NULL
+  FROM ingredient_split
+  WHERE rest NOT LIKE '%,%'
+)
+SELECT 
+  ingredient,
+  COUNT(DISTINCT pizza_name) AS pizzas_with_ingredient
+FROM ingredient_split
+WHERE ingredient IS NOT NULL AND ingredient != ''
+GROUP BY ingredient
+ORDER BY pizzas_with_ingredient DESC
+LIMIT 1;
+
+
+
+
 
